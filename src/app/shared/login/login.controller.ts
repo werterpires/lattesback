@@ -3,6 +3,7 @@ import { LoginService } from './login.service';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { ErrorsService } from '../shared-services/errors-service/errors-service.service';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
+import { IsPublic } from '../auth/decorators/is-public.decorator';
 
 @Controller()
 export class LoginController {
@@ -23,7 +24,7 @@ export class LoginController {
       );
     }
   }
-
+  @IsPublic()
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Request() req) {

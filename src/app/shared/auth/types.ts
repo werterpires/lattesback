@@ -12,7 +12,7 @@ export interface UserToken {
 }
 
 export interface IUserFromJwt {
-  userId: number;
+  userId: string;
   name: string;
   email: string;
   role: string;

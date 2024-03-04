@@ -6,11 +6,24 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { LoginModule } from './app/shared/login/login.module';
 import { AuthModule } from './app/shared/auth/auth.module';
 import * as dotenv from 'dotenv';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './app/shared/auth/guards/jwt-auth.guard';
 dotenv.config();
 
 @Module({
-  imports: [MongooseModule.forRoot(process.env.DATABASECONECT), LoginModule, AuthModule],
+  imports: [
+    MongooseModule.forRoot(process.env.DATABASECONECT),
+    LoginModule,
+    AuthModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, ErrorsService],
+  providers: [
+    AppService,
+    ErrorsService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
