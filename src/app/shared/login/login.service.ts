@@ -6,12 +6,16 @@ import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { ErrorsService } from '../shared-services/errors-service/errors-service.service';
+import { IUserPayload, UserToken } from '../auth/types';
+import { IUser } from './types';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LoginService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly errorService: ErrorsService,
+    private readonly jwtService: JwtService,
   ) {}
   async createUser(createLoginDto: CreateLoginDto) {
     try {
@@ -23,8 +27,14 @@ export class LoginService {
         role: createLoginDto.role,
       });
       const createdUser = await createUserData.save();
-      createdUser.password = undefined;
-      return createdUser;
+      const user: IUser = {
+        userId: createdUser._id,
+        name: createdUser.name,
+        email: createdUser.email,
+        role: createdUser.role,
+      };
+
+      return user;
     } catch (error) {
       throw this.errorService.handleErrors(
         error,
@@ -34,19 +44,17 @@ export class LoginService {
     }
   }
 
-  // findAll() {
-  //   return `This action returns all login`;
-  // }
+  login(user: IUser): UserToken {
+    const payload: IUserPayload = {
+      sub: user.userId.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} login`;
-  // }
-
-  // update(id: number, updateLoginDto: UpdateLoginDto) {
-  //   return `This action updates a #${id} login`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} login`;
-  // }
+    const jwtToken = this.jwtService.sign(payload);
+    return {
+      accessToken: jwtToken,
+    };
+  }
 }

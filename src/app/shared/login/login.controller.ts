@@ -1,23 +1,38 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { ErrorsService } from '../shared-services/errors-service/errors-service.service';
+import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 
-@Controller('login')
+@Controller()
 export class LoginController {
   constructor(
     private readonly loginService: LoginService,
     private readonly errorService: ErrorsService,
   ) {}
 
-  @Post()
+  @Post('logon')
   async create(@Body() createLoginDto: CreateLoginDto) {
     try {
       return await this.loginService.createUser(createLoginDto);
     } catch (error) {
       throw this.errorService.handleErrors(
         error,
-        'Erro ao criar o login',
+        'Erro ao criar o usuário',
+        'createUser',
+      );
+    }
+  }
+
+  @Post('login')
+  @UseGuards(LocalAuthGuard)
+  async login(@Request() req) {
+    try {
+      return await this.loginService.login(req.user);
+    } catch (error) {
+      throw this.errorService.handleErrors(
+        error,
+        'Erro ao criar o usuário',
         'createUser',
       );
     }

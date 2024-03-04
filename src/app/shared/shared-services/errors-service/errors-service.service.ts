@@ -10,7 +10,7 @@ export class ErrorsService {
       console.error(`new error in  ${func}:`);
       console.error(error);
       return new InternalServerErrorException(
-        'Impossível de realizar a operação',
+        '#Impossível de realizar a operação',
       );
     }
   }
