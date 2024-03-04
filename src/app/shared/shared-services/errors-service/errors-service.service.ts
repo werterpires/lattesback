@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
-export class ErrorsServiceService {
+export class ErrorsService {
   handleErrors(error: any, message: string, func: string): any {
     // console.error('erro para debug:', error);
     if (error.message.startsWith('#')) {
