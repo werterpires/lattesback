@@ -1,34 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { CreateCurriculumDto } from './dto/create-curriculum.dto';
-import { UpdateCurriculumDto } from './dto/update-curriculum.dto';
+import { ErrorsService } from '../shared/shared-services/errors-service/errors-service.service';
 
 @Controller('curriculum')
 export class CurriculumController {
-  constructor(private readonly curriculumService: CurriculumService) {}
+  constructor(
+    private readonly curriculumService: CurriculumService,
+    private readonly errorService: ErrorsService,
+  ) {}
 
   @Post()
   create(@Body() createCurriculumDto: CreateCurriculumDto) {
-    return this.curriculumService.create(createCurriculumDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.curriculumService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.curriculumService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCurriculumDto: UpdateCurriculumDto) {
-    return this.curriculumService.update(+id, updateCurriculumDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.curriculumService.remove(+id);
+    try {
+      return this.curriculumService.createOrUpdateCurriculums(
+        createCurriculumDto,
+      );
+    } catch (error) {
+      throw this.errorService.handleErrors(
+        error,
+        'Erro ao criar o Curriculum',
+        'create',
+      );
+    }
   }
 }
