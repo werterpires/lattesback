@@ -8,6 +8,7 @@ import { AuthModule } from './app/shared/auth/auth.module';
 import * as dotenv from 'dotenv';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './app/shared/auth/guards/jwt-auth.guard';
+import { CurriculumModule } from './app/curriculum/curriculum.module';
 dotenv.config();
 
 @Module({
@@ -15,6 +16,7 @@ dotenv.config();
     MongooseModule.forRoot(process.env.DATABASECONECT),
     LoginModule,
     AuthModule,
+    CurriculumModule,
   ],
   controllers: [AppController],
   providers: [
