@@ -11,7 +11,6 @@ export function IsArrayOfICurriculum(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: any) {
           if (!Array.isArray(value)) {
-            console.log('is not array');
             return false;
           }
           for (const obj of value) {
@@ -24,14 +23,6 @@ export function IsArrayOfICurriculum(validationOptions?: ValidationOptions) {
                 typeof obj.updatedDate === 'string'
               )
             ) {
-              console.log(obj, 'is not CreateCurriculum');
-              console.log(
-                typeof obj.lattesId === 'string',
-                typeof obj.active,
-                typeof obj.serviceYears === 'string',
-                typeof obj.curriculum === 'string',
-                typeof obj.updatedDate === 'string',
-              );
               return false;
             }
           }
