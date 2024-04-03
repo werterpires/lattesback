@@ -27,6 +27,7 @@ export class CurriculumService {
         if (!savedCurriculum) {
           curriculumsToCreate.push(curriculum);
         } else if (savedCurriculum.updatedDate < curriculum.updatedDate) {
+          curriculum.serviceYears = savedCurriculum.serviceYears;
           curriculumsToUpdate.push(curriculum);
         }
       }
