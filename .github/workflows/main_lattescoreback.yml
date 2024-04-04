@@ -33,4 +33,4 @@ jobs:
           app-name: 'lattescoreback'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9CBEF03D259E4C9898C848FE11465726 }}
-          package: .
+          package: ./
