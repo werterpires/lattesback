@@ -13,6 +13,8 @@ export class CurriculumController {
   @Post()
   async create(@Body() createCurriculumDto: CreateCurriculumDto) {
     try {
+      const tamanhoPayload = JSON.stringify(createCurriculumDto).length;
+      console.log(`Tamanho do payload: ${tamanhoPayload / (1024 * 1024)} MB`);
       return await this.curriculumService.createOrUpdateCurriculums(
         createCurriculumDto,
       );
