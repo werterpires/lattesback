@@ -9,6 +9,7 @@ import * as dotenv from 'dotenv';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './app/shared/auth/guards/jwt-auth.guard';
 import { CurriculumModule } from './app/curriculum/curriculum.module';
+import { TagsModule } from './app/tags/tags.module';
 dotenv.config();
 
 @Module({
@@ -17,6 +18,7 @@ dotenv.config();
     LoginModule,
     AuthModule,
     CurriculumModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [
