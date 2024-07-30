@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCurriculumDto } from './create-curriculum.dto';
+import { IsBoolean, IsString } from 'class-validator';
 
-export class UpdateCurriculumDto extends PartialType(CreateCurriculumDto) {}
+export class UpdateCurriculumDto {
+  @IsString({ each: true })
+  serviceYears: string[];
+
+  @IsBoolean()
+  active: boolean;
+
+  @IsString({ each: true })
+  tagsIds: string[];
+
+  @IsString()
+  lattesId: string;
+}

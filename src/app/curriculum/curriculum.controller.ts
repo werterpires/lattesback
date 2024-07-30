@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Put } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 import { ErrorsService } from '../shared/shared-services/errors-service/errors-service.service';
+import { UpdateCurriculumDto } from './dto/update-curriculum.dto';
 
 @Controller('curriculum')
 export class CurriculumController {
@@ -36,6 +37,19 @@ export class CurriculumController {
         error,
         'Erro ao buscar o Curriculum',
         'getAll',
+      );
+    }
+  }
+
+  @Put()
+  async update(@Body() updateCurriculumDto: UpdateCurriculumDto) {
+    try {
+      return await this.curriculumService.updteCurriculum(updateCurriculumDto);
+    } catch (error) {
+      throw this.errorService.handleErrors(
+        error,
+        'Erro ao atualizar o Curriculum',
+        'update',
       );
     }
   }

@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Curriculum } from './schemas/curriculum.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ErrorsService } from '../shared/shared-services/errors-service/errors-service.service';
-import { ICurriculum } from './types';
+import { CreateCurriculum, ICurriculum, IUpdateCurriculum } from './types';
+import { UpdateCurriculumDto } from './dto/update-curriculum.dto';
 
 @Injectable()
 export class CurriculumService {
@@ -16,8 +17,8 @@ export class CurriculumService {
   async createOrUpdateCurriculums(curriculumsDto: CreateCurriculumDto) {
     try {
       const { curriculums } = curriculumsDto;
-      const curriculumsToCreate = [];
-      const curriculumsToUpdate = [];
+      const curriculumsToCreate: CreateCurriculum[] = [];
+      const curriculumsToUpdate: CreateCurriculum[] = [];
 
       for (const curriculum of curriculums) {
         const savedCurriculum = await this.curriculumModel.findOne({
@@ -28,6 +29,7 @@ export class CurriculumService {
           curriculumsToCreate.push(curriculum);
         } else if (savedCurriculum.updatedDate < curriculum.updatedDate) {
           curriculum.serviceYears = savedCurriculum.serviceYears;
+          curriculum.active = savedCurriculum.active;
           curriculumsToUpdate.push(curriculum);
         }
       }
@@ -35,12 +37,21 @@ export class CurriculumService {
       if (curriculumsToCreate.length > 0) {
         await this.curriculumModel.insertMany(curriculumsToCreate);
       }
+      console.log('chegando aqui');
 
       if (curriculumsToUpdate.length > 0) {
-        await this.curriculumModel.updateMany(
-          { lattesId: { $in: curriculumsToUpdate.map((c) => c.lattesId) } },
-          { $set: { curriculum: curriculumsToUpdate } },
-        );
+        curriculumsToUpdate.forEach((c) => {
+          console.log('id', c.lattesId);
+          this.curriculumModel.updateOne(
+            { lattesId: c.lattesId },
+            {
+              $set: {
+                updatedDate: c.updatedDate,
+                curriculum: c.curriculum,
+              },
+            },
+          );
+        });
       }
 
       const createdLattesId = curriculumsToCreate.map((c) => c.lattesId);
@@ -62,13 +73,38 @@ export class CurriculumService {
     }
   }
 
+  async updteCurriculum(updateCurriculumData: UpdateCurriculumDto) {
+    try {
+      const updateData: IUpdateCurriculum = {
+        active: updateCurriculumData.active,
+        serviceYears: updateCurriculumData.serviceYears.join(' '),
+        tags: updateCurriculumData.tagsIds.map((t) => new Types.ObjectId(t)),
+      };
+      return await this.curriculumModel.updateOne(
+        { lattesId: updateCurriculumData.lattesId },
+        { $set: updateData },
+      );
+    } catch (error) {
+      throw this.errorService.handleErrors(
+        error,
+        'Erro ao atualizar o Curriculum',
+        'updteCurriculum',
+      );
+    }
+  }
+
   async findAllCurriculums(): Promise<Curriculum[]> {
     try {
-      const curriculumsData = await this.curriculumModel.find();
+      const curriculumsData = await this.curriculumModel
+        .find()
+        .populate({ path: 'tags', select: 'tagName', model: 'Tag' })
+        .exec();
 
-      return curriculumsData.map((createCurriculumFromDBData) =>
+      const curriculums = curriculumsData.map((createCurriculumFromDBData) =>
         this.createCurriculumFromDBData(createCurriculumFromDBData),
       );
+
+      return curriculums;
     } catch (error) {
       throw this.errorService.handleErrors(
         error,
@@ -86,6 +122,7 @@ export class CurriculumService {
       active: createCurriculumFromDBData.active,
       serviceYears: createCurriculumFromDBData.serviceYears,
       updatedDate: createCurriculumFromDBData.updatedDate,
+      tags: createCurriculumFromDBData.tags,
     };
     return curriculum;
   }
