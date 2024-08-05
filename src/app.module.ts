@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './app/shared/auth/guards/jwt-auth.guard';
 import { CurriculumModule } from './app/curriculum/curriculum.module';
 import { TagsModule } from './app/tags/tags.module';
+import { QuallisModule } from './app/quallis/quallis.module';
 dotenv.config();
 
 @Module({
@@ -19,6 +20,7 @@ dotenv.config();
     AuthModule,
     CurriculumModule,
     TagsModule,
+    QuallisModule,
   ],
   controllers: [AppController],
   providers: [

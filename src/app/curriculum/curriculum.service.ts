@@ -37,11 +37,9 @@ export class CurriculumService {
       if (curriculumsToCreate.length > 0) {
         await this.curriculumModel.insertMany(curriculumsToCreate);
       }
-      console.log('chegando aqui');
 
       if (curriculumsToUpdate.length > 0) {
         curriculumsToUpdate.forEach((c) => {
-          console.log('id', c.lattesId);
           this.curriculumModel.updateOne(
             { lattesId: c.lattesId },
             {
