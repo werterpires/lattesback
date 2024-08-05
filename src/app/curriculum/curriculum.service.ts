@@ -40,18 +40,32 @@ export class CurriculumService {
 
       if (curriculumsToUpdate.length > 0) {
         curriculumsToUpdate.forEach((c) => {
-          this.curriculumModel.updateOne(
-            { lattesId: c.lattesId },
-            {
-              $set: {
-                updatedDate: c.updatedDate,
-                curriculum: c.curriculum,
+          console.log('Currículo a atualizar:', c);
+
+          this.curriculumModel
+            .updateOne(
+              { lattesId: c.lattesId },
+              {
+                $set: {
+                  updatedDate: c.updatedDate,
+                  curriculum: c.curriculum,
+                },
               },
-            },
-          );
+            )
+            .then((res) => {
+              console.log(
+                `Currículo com lattesId ${c.lattesId} atualizado com sucesso:`,
+                res,
+              );
+            })
+            .catch((err) => {
+              console.error(
+                `Erro ao atualizar currículo com lattesId ${c.lattesId}:`,
+                err,
+              );
+            });
         });
       }
-
       const createdLattesId = curriculumsToCreate.map((c) => c.lattesId);
       const updatedLattesId = curriculumsToUpdate.map((c) => c.lattesId);
       const importantLattesId = [...createdLattesId, ...updatedLattesId];
